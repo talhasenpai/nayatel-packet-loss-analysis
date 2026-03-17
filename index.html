@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nayatel Support — Network Issue Report</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700&display=swap');
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --border: #1e2330;
+    --accent: #e8a020;
+    --accent2: #3b82f6;
+    --red: #ef4444;
+    --green: #22c55e;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .header {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    margin-bottom: 32px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: var(--mono);
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-family: var(--mono);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 15px;
+    margin-bottom: 12px;
+    line-height: 1.7;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  /* Stats cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+
+  .stat-value.bad { color: var(--red); }
+  .stat-value.ok { color: var(--accent); }
+  .stat-value.good { color: var(--green); }
+
+  /* WinMTR table */
+  .winmtr-wrap {
+    margin-top: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .winmtr-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+    min-width: 580px;
+  }
+
+  .winmtr-wrap thead tr {
+    background: #1a1f2e;
+  }
+
+  .winmtr-wrap th {
+    padding: 10px 12px;
+    text-align: left;
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .winmtr-wrap td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .winmtr-wrap tr:last-child td { border-bottom: none; }
+
+  .winmtr-wrap tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .winmtr-wrap td.host { color: var(--text); max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+  .winmtr-wrap td.highlight { color: #fff; font-weight: 600; }
+  .winmtr-wrap td.loss-bad { color: var(--red); font-weight: 600; }
+  .winmtr-wrap td.loss-ok { color: var(--accent); }
+  .winmtr-wrap td.loss-good { color: var(--green); }
+  .winmtr-wrap td.worst-bad { color: var(--red); }
+
+  .scroll-hint {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .scroll-hint { display: block; }
+  }
+
+  /* Comparison */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+
+  .compare-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+  }
+
+  .compare-card.nayatel { border-top: 2px solid var(--accent); }
+  .compare-card.ptcl { border-top: 2px solid var(--accent2); }
+
+  .compare-isp {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .compare-isp.nayatel { color: var(--accent); }
+  .compare-isp.ptcl { color: var(--accent2); }
+
+  .compare-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-family: var(--mono);
+    margin-bottom: 6px;
+    color: var(--muted);
+  }
+
+  .compare-row span:last-child { color: var(--text); }
+  .compare-row span.bad { color: var(--red); }
+  .compare-row span.good { color: var(--green); }
+
+  /* Requests */
+  .request-list {
+    list-style: none;
+    margin-top: 8px;
+  }
+
+  .request-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: #94a3b8;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .request-list li:last-child { border-bottom: none; }
+
+  .req-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(232,160,32,0.1);
+    border-radius: 4px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .badge.issue { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .badge.ok { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="tag">Support Ticket · Network Diagnostics</div>
+    <h1>Packet Loss Issue Affecting Gaming Performance</h1>
+    <div class="subtitle">WinMTR Report · 30-minute test · 19:00–19:30 PKT</div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-title">Issue Summary</div>
+    <p>I am experiencing packet loss on my Nayatel connection which is impacting online gaming performance, specifically PUBG Mobile. I ran a 30-minute WinMTR test to the game server (<strong style="color:#fff">20.74.160.84</strong> — Microsoft Azure UAE, Dubai) and noticed consistent packet loss at a specific hop within the routing path.</p>
+    <p>For reference, a simultaneous PTCL test was conducted over the same 30-minute window under identical conditions to isolate the issue to Nayatel's network.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Problem Hop</div>
+        <div class="stat-value bad">8%</div>
+        <div class="stat-label" style="margin-top:4px">Packet Loss</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Hop IP</div>
+        <div class="stat-value ok" style="font-size:13px;margin-top:4px">51.10.33.50</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Worst Spike</div>
+        <div class="stat-value bad">353ms</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">PTCL Loss</div>
+        <div class="stat-value good">0%</div>
+        <div class="stat-label" style="margin-top:4px">Same Route</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nayatel WinMTR -->
+  <div class="section">
+    <div class="section-title">
+      Nayatel WinMTR Results
+      <span class="badge issue">Issue Detected</span>
+    </div>
+    <p style="font-size:13px;">Test duration: 30 minutes · Target: 20.74.160.84 (Azure UAE North, Dubai)</p>
+    <div class="scroll-hint">← Scroll horizontally to view full table →</div>
+    <div class="winmtr-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th>Loss%</th>
+            <th>Sent</th>
+            <th>Recv</th>
+            <th>Best</th>
+            <th>Avg</th>
+            <th>Worst</th>
+            <th>Last</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="host">192.168.18.1</td><td class="loss-ok">1%</td><td>1753</td><td>1743</td><td>1</td><td>3</td><td>287</td><td>1</td></tr>
+          <tr><td class="host">172.16.86.8</td><td class="loss-ok">1%</td><td>1749</td><td>1738</td><td>2</td><td>6</td><td>453</td><td>4</td></tr>
+          <tr><td class="host">10.97.158.110</td><td class="loss-ok">1%</td><td>1746</td><td>1734</td><td>2</td><td>6</td><td>310</td><td>4</td></tr>
+          <tr><td class="host">10.253.9.166</td><td class="loss-ok">1%</td><td>1753</td><td>1743</td><td>3</td><td>6</td><td>307</td><td>4</td></tr>
+          <tr><td class="host">10.253.9.222</td><td class="loss-ok">1%</td><td>1756</td><td>1747</td><td>14</td><td>17</td><td>240</td><td>15</td></tr>
+          <tr><td class="host">10.253.4.42</td><td class="loss-ok">1%</td><td>1753</td><td>1743</td><td>14</td><td>18</td><td>432</td><td>16</td></tr>
+          <tr><td class="host">10.253.4.8</td><td class="loss-ok">1%</td><td>1745</td><td>1733</td><td>15</td><td>18</td><td>340</td><td>16</td></tr>
+          <tr><td class="host">ae61-0.ier01.dxb20.ntwk.msn.net</td><td class="loss-ok">1%</td><td>1745</td><td>1733</td><td>32</td><td>37</td><td>432</td><td>34</td></tr>
+          <tr style="background:rgba(239,68,68,0.06)">
+            <td class="host highlight">51.10.33.50 ⚠️</td>
+            <td class="loss-bad">8%</td>
+            <td>1414</td><td>1315</td><td>34</td><td>38</td>
+            <td class="worst-bad">362</td><td>36</td>
+          </tr>
+          <tr><td class="host" colspan="8" style="color:var(--muted);font-style:italic;">— No response from host (×9 hops) —</td></tr>
+          <tr style="background:rgba(232,160,32,0.04)">
+            <td class="host highlight">20.74.160.84 (Final)</td>
+            <td class="loss-ok">1%</td>
+            <td>1750</td><td>1739</td><td>35</td><td>39</td>
+            <td class="worst-bad">353</td><td>35</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PTCL WinMTR -->
+  <div class="section">
+    <div class="section-title">
+      PTCL WinMTR Results (Reference)
+      <span class="badge ok">No Loss</span>
+    </div>
+    <p style="font-size:13px;">Same test · Same duration · Same target · Conducted simultaneously</p>
+    <div class="scroll-hint">← Scroll horizontally to view full table →</div>
+    <div class="winmtr-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th>Loss%</th>
+            <th>Sent</th>
+            <th>Recv</th>
+            <th>Best</th>
+            <th>Avg</th>
+            <th>Worst</th>
+            <th>Last</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="host">192.168.1.1</td><td class="loss-ok">1%</td><td>1786</td><td>1785</td><td>1</td><td>3</td><td>395</td><td>1</td></tr>
+          <tr><td class="host">39.50.128.1</td><td class="loss-ok">1%</td><td>1782</td><td>1780</td><td>1</td><td>4</td><td>419</td><td>2</td></tr>
+          <tr><td class="host">10.253.9.166</td><td class="loss-ok">1%</td><td>1774</td><td>1770</td><td>2</td><td>4</td><td>458</td><td>2</td></tr>
+          <tr><td class="host">10.253.9.222</td><td class="loss-good">0%</td><td>1789</td><td>1789</td><td>13</td><td>16</td><td>391</td><td>14</td></tr>
+          <tr><td class="host">10.253.4.42</td><td class="loss-ok">1%</td><td>1782</td><td>1780</td><td>13</td><td>16</td><td>474</td><td>14</td></tr>
+          <tr><td class="host">10.253.4.8</td><td class="loss-ok">1%</td><td>1774</td><td>1770</td><td>14</td><td>16</td><td>408</td><td>17</td></tr>
+          <tr><td class="host">ae61-0.ier01.dxb20.ntwk.msn.net</td><td class="loss-ok">1%</td><td>1782</td><td>1780</td><td>31</td><td>36</td><td>493</td><td>33</td></tr>
+          <tr><td class="host">51.10.55.20</td><td class="loss-good">0%</td><td>1789</td><td>1789</td><td>31</td><td>34</td><td>409</td><td>32</td></tr>
+          <tr><td class="host" colspan="8" style="color:var(--muted);font-style:italic;">— No response from host (×9 hops) —</td></tr>
+          <tr style="background:rgba(232,160,32,0.04)">
+            <td class="host highlight">20.74.160.84 (Final)</td>
+            <td class="loss-good">0%</td>
+            <td>1789</td><td>1789</td><td>32</td><td>35</td>
+            <td>486</td><td>33</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Side by side comparison -->
+  <div class="section">
+    <div class="section-title">Side-by-Side Comparison</div>
+    <div class="compare-grid">
+      <div class="compare-card nayatel">
+        <div class="compare-isp nayatel">Nayatel</div>
+        <div class="compare-row"><span>Hop 9 Loss</span><span class="bad">8%</span></div>
+        <div class="compare-row"><span>Final Loss</span><span>1%</span></div>
+        <div class="compare-row"><span>Final Avg</span><span>39ms</span></div>
+        <div class="compare-row"><span>Final Worst</span><span>353ms</span></div>
+      </div>
+      <div class="compare-card ptcl">
+        <div class="compare-isp ptcl">PTCL (Reference)</div>
+        <div class="compare-row"><span>Hop 8 Loss</span><span class="good">0%</span></div>
+        <div class="compare-row"><span>Final Loss</span><span class="good">0%</span></div>
+        <div class="compare-row"><span>Final Avg</span><span>35ms</span></div>
+        <div class="compare-row"><span>Final Worst</span><span>486ms</span></div>
+      </div>
+    </div>
+    <p style="margin-top:14px;font-size:13px;">The 8% packet loss at <strong style="color:#fff">51.10.33.50</strong> is unique to the Nayatel routing path. The same destination via PTCL shows 0% loss at an equivalent hop, confirming this is a Nayatel network issue and not a problem with the game server or my local equipment.</p>
+  </div>
+
+  <!-- Requests -->
+  <div class="section">
+    <div class="section-title">Requested Actions</div>
+    <ul class="request-list">
+      <li><span class="req-num">01</span>Investigate packet loss at hop <strong style="color:#fff">51.10.33.50</strong> on the Nayatel routing path to Dubai (Azure UAE North)</li>
+      <li><span class="req-num">02</span>Check for congestion or peering issues on this specific transit link</li>
+      <li><span class="req-num">03</span>Optimize routing path to <strong style="color:#fff">20.74.160.84</strong> for improved real-time gaming performance</li>
+      <li><span class="req-num">04</span>Confirm once the issue has been investigated and advise if further testing is required</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Generated · WinMTR v0.92 · Test duration 30 minutes · 19:00–19:30 PKT
+  </div>
+
+</div>
+</body>
+</html>
