@@ -1,11 +1,377 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Performance Comparison Report - PTCL vs Nayatel</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --line: #30363d;
+      --ptcl: #58a6ff;
+      --nayatel: #ff7b72;
+      --good: #3fb950;
+      --soft: #21262d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 500px at 85% -10%, #1f2a3a 0%, transparent 60%),
+        radial-gradient(900px 450px at -5% 0%, #301918 0%, transparent 55%),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px 28px;
+    }
+
+    .hero {
+      background: linear-gradient(140deg, #1f6feb 0%, #1158c7 55%, #0d419d 100%);
+      color: #fff;
+      border-radius: 14px;
+      padding: 22px 24px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin: 0 0 10px; font-size: 20px; }
+    p { margin: 8px 0; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 14px;
+      opacity: 0.97;
+    }
+
+    .meta div {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .section {
+      margin-top: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 920px) {
+      .grid.two { grid-template-columns: 1fr 1fr; }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th { background: #21262d; }
+
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .ptcl-pill { background: rgba(88, 166, 255, 0.15); color: var(--ptcl); }
+    .nayatel-pill { background: rgba(255, 123, 114, 0.15); color: var(--nayatel); }
+    .winner { color: var(--good); font-weight: 700; }
+    .muted { color: var(--muted); }
+
+    .download-btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+    .download-btn:hover { opacity: 0.8; }
+    .ptcl-btn { background: var(--ptcl); color: #fff; }
+    .nayatel-btn { background: var(--nayatel); color: #fff; }
+
+    .bar-wrap { margin: 10px 0; }
+
+    .bar-title {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .bar-bg {
+      height: 10px;
+      border-radius: 8px;
+      background: #30363d;
+      overflow: hidden;
+    }
+
+    .bar {
+      display: block;
+      height: 100%;
+    }
+
+    ul { margin: 8px 0 0 20px; }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .summary {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--ptcl);
+      border-bottom: 2px solid var(--ptcl);
+    }
+
+    .old-frame {
+      width: 100%;
+      height: 800px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #0d0f14;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="openTab('current-test', this)">Latest: Routing Comparison</button>
+      <button class="tab-btn" onclick="openTab('old-test', this)">Old WIFI WINMTR test</button>
+    </div>
+
+    <div id="current-test" class="tab-content active">
+
+    <section class="hero">
+      <h1>PTCL vs Nayatel - Gaming Network Comparison</h1>
+      <p>This report compares measured latency behavior to a common destination and identifies which connection is currently better suited for online gaming.</p>
+      <div class="meta">
+        <div><strong>Destination Host:</strong> 20.74.160.84</div>
+        <div><strong>Test Date:</strong> 05-Apr-2026</div>
+        <div><strong>Test Medium:</strong> Ethernet</div>
+        <div><strong>Primary Outcome:</strong> PTCL performs better overall</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <p>PTCL shows lower average latency, lower tail latency (P95/P99), and lower jitter than Nayatel in this dataset. These characteristics are directly relevant to smoother gameplay, better hit registration, and fewer sudden lag events.</p>
+      <div class="summary">
+        <strong>Recommendation:</strong> Based on the current measured route and time window, PTCL is the stronger option for competitive and latency-sensitive gaming.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Comparative Metrics</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th><span class="pill ptcl-pill">PTCL</span></th>
+            <th><span class="pill nayatel-pill">Nayatel</span></th>
+            <th>Better</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sample count</td>
+            <td>2037</td>
+            <td>1882</td>
+            <td class="muted">-</td>
+          </tr>
+          <tr>
+            <td>Average latency</td>
+            <td>34.84 ms</td>
+            <td>42.08 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Median latency</td>
+            <td>34.53 ms</td>
+            <td>40.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>P95 latency</td>
+            <td>35.85 ms</td>
+            <td>42.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>P99 latency</td>
+            <td>44.27 ms</td>
+            <td>45.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Minimum latency</td>
+            <td>33.00 ms</td>
+            <td>38.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Maximum latency</td>
+            <td>56.89 ms</td>
+            <td>1064.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Jitter proxy (avg absolute RTT delta)</td>
+            <td>0.90 ms</td>
+            <td>4.28 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>High spikes >= 100 ms</td>
+            <td>0</td>
+            <td>3</td>
+            <td class="winner">PTCL</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">Lower values are better for all latency and jitter metrics listed above.</p>
+    </section>
+
+    <section class="section">
+      <h2>Visual Snapshot</h2>
+
+      <div class="bar-wrap">
+        <div class="bar-title"><span>Average latency</span><span>PTCL 34.84 ms | Nayatel 42.08 ms</span></div>
+        <div class="bar-bg"><span class="bar" style="width:69.7%;background:var(--ptcl)"></span></div>
+        <div class="bar-bg" style="margin-top:4px;"><span class="bar" style="width:84.2%;background:var(--nayatel)"></span></div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar-title"><span>P95 latency</span><span>PTCL 35.85 ms | Nayatel 42.00 ms</span></div>
+        <div class="bar-bg"><span class="bar" style="width:71.7%;background:var(--ptcl)"></span></div>
+        <div class="bar-bg" style="margin-top:4px;"><span class="bar" style="width:84%;background:var(--nayatel)"></span></div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar-title"><span>Jitter proxy</span><span>PTCL 0.90 ms | Nayatel 4.28 ms</span></div>
+        <div class="bar-bg"><span class="bar" style="width:9%;background:var(--ptcl)"></span></div>
+        <div class="bar-bg" style="margin-top:4px;"><span class="bar" style="width:42.8%;background:var(--nayatel)"></span></div>
+      </div>
+
+      <p class="note">Bars are normalized for quick relative reading.</p>
+    </section>
+
+    <div class="grid two">
+      <section class="section">
+        <h2>Methodology</h2>
+        <ul>
+          <li>Both logs were evaluated against the same destination host.</li>
+          <li>Nayatel RTT values were parsed from ICMP ping lines in milliseconds.</li>
+          <li>PTCL RTT values were parsed from timestamped CSV sample rows using the destination RTT column.</li>
+          <li>Percentile latency values (P95/P99) were used to evaluate consistency under worst-case moments.</li>
+          <li>Jitter proxy used: mean absolute difference between consecutive RTT samples.</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Support Follow-up Focus</h2>
+        <ul>
+          <li>Route quality and peering path from Nayatel to the tested endpoint region.</li>
+          <li>Tail-latency reduction (P95/P99) for sustained gaming sessions.</li>
+          <li>Micro-jitter consistency across evening peak hours.</li>
+          <li>Any intermittent network behavior contributing to large RTT excursions.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="section" style="text-align: center;">
+      <h2>Raw Data Files</h2>
+      <p style="color: var(--muted);">Download the original log files used for this analysis to verify the findings.</p>
+      <div style="margin-top: 16px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="20.74.160.84-PTCL.csv" download class="download-btn ptcl-btn">Download PTCL Data (CSV)</a>
+        <a href="Nayatel.txt" download class="download-btn nayatel-btn">Download Nayatel Data (TXT)</a>
+      </div>
+    </section>
+    
+    </div> <!-- End current test tab content -->
+
+    <div id="old-test" class="tab-content">
+      <iframe class="old-frame" srcdoc='<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nayatel Support — Network Issue Report</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700&display=swap');
+  @import url(&#39;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700&display=swap&#39;);
 
   :root {
     --bg: #0d0f14;
@@ -17,8 +383,8 @@
     --green: #22c55e;
     --text: #e2e8f0;
     --muted: #64748b;
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'Syne', sans-serif;
+    --mono: &#39;JetBrains Mono&#39;, monospace;
+    --sans: &#39;Syne&#39;, sans-serif;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -306,7 +672,7 @@
   <div class="section">
     <div class="section-title">Issue Summary</div>
     <p>I am experiencing packet loss on my Nayatel connection which is impacting online gaming performance, specifically PUBG Mobile. I ran a 30-minute WinMTR test to the game server (<strong style="color:#fff">20.74.160.84</strong> — Microsoft Azure UAE, Dubai) and noticed consistent packet loss at a specific hop within the routing path.</p>
-    <p>For reference, a simultaneous PTCL test was conducted over the same 30-minute window under identical conditions to isolate the issue to Nayatel's network.</p>
+    <p>For reference, a simultaneous PTCL test was conducted over the same 30-minute window under identical conditions to isolate the issue to Nayatel&#39;s network.</p>
 
     <div class="stats-grid">
       <div class="stat-card">
@@ -460,5 +826,19 @@
   </div>
 
 </div>
+</body>
+</html>'></iframe>
+    </div>
+
+  </div>
+
+  <script>
+    function openTab(tabId, btn) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+      document.getElementById(tabId).classList.add("active");
+      btn.classList.add("active");
+    }
+  </script>
 </body>
 </html>
