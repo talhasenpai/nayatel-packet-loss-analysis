@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Network Performance Comparison Report - PTCL vs Nayatel</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --panel: #161b22;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --line: #30363d;
+      --ptcl: #58a6ff;
+      --nayatel: #ff7b72;
+      --good: #3fb950;
+      --soft: #21262d;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1100px 500px at 85% -10%, #1f2a3a 0%, transparent 60%),
+        radial-gradient(900px 450px at -5% 0%, #301918 0%, transparent 55%),
+        var(--bg);
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 0 16px 28px;
+    }
+
+    .hero {
+      background: linear-gradient(140deg, #1f6feb 0%, #1158c7 55%, #0d419d 100%);
+      color: #fff;
+      border-radius: 14px;
+      padding: 22px 24px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    h2 { margin: 0 0 10px; font-size: 20px; }
+    p { margin: 8px 0; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+      font-size: 14px;
+      opacity: 0.97;
+    }
+
+    .meta div {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 8px 10px;
+    }
+
+    .section {
+      margin-top: 14px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 920px) {
+      .grid.two { grid-template-columns: 1fr 1fr; }
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th { background: #21262d; }
+
+    .pill {
+      display: inline-block;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      letter-spacing: 0.2px;
+    }
+
+    .ptcl-pill { background: rgba(88, 166, 255, 0.15); color: var(--ptcl); }
+    .nayatel-pill { background: rgba(255, 123, 114, 0.15); color: var(--nayatel); }
+    .winner { color: var(--good); font-weight: 700; }
+    .muted { color: var(--muted); }
+
+    .download-btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      transition: opacity 0.2s;
+    }
+    .download-btn:hover { opacity: 0.8; }
+    .ptcl-btn { background: var(--ptcl); color: #fff; }
+    .nayatel-btn { background: var(--nayatel); color: #fff; }
+
+    .bar-wrap { margin: 10px 0; }
+
+    .bar-title {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .bar-bg {
+      height: 10px;
+      border-radius: 8px;
+      background: #30363d;
+      overflow: hidden;
+    }
+
+    .bar {
+      display: block;
+      height: 100%;
+    }
+
+    ul { margin: 8px 0 0 20px; }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .summary {
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 12px 16px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      color: var(--ptcl);
+      border-bottom: 2px solid var(--ptcl);
+    }
+
+    .old-frame {
+      width: 100%;
+      height: 800px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #0d0f14;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active" onclick="openTab('current-test', this)">Latest: Routing Comparison</button>
+      <button class="tab-btn" onclick="openTab('old-test', this)">Old WIFI WINMTR test</button>
+    </div>
+
+    <div id="current-test" class="tab-content active">
+
+    <section class="hero">
+      <h1>PTCL vs Nayatel - Gaming Network Comparison</h1>
+      <p>This report compares measured latency behavior to a common destination and identifies which connection is currently better suited for online gaming.</p>
+      <div class="meta">
+        <div><strong>Destination Host:</strong> 20.74.160.84</div>
+        <div><strong>Test Date:</strong> 05-Apr-2026</div>
+        <div><strong>Test Medium:</strong> Ethernet</div>
+        <div><strong>Primary Outcome:</strong> PTCL performs better overall</div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Executive Summary</h2>
+      <p>PTCL shows lower average latency, lower tail latency (P95/P99), and lower jitter than Nayatel in this dataset. These characteristics are directly relevant to smoother gameplay, better hit registration, and fewer sudden lag events.</p>
+      <div class="summary">
+        <strong>Recommendation:</strong> Based on the current measured route and time window, PTCL is the stronger option for competitive and latency-sensitive gaming.
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Comparative Metrics</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th><span class="pill ptcl-pill">PTCL</span></th>
+            <th><span class="pill nayatel-pill">Nayatel</span></th>
+            <th>Better</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Sample count</td>
+            <td>2037</td>
+            <td>1882</td>
+            <td class="muted">-</td>
+          </tr>
+          <tr>
+            <td>Average latency</td>
+            <td>34.84 ms</td>
+            <td>42.08 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Median latency</td>
+            <td>34.53 ms</td>
+            <td>40.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>P95 latency</td>
+            <td>35.85 ms</td>
+            <td>42.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>P99 latency</td>
+            <td>44.27 ms</td>
+            <td>45.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Minimum latency</td>
+            <td>33.00 ms</td>
+            <td>38.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Maximum latency</td>
+            <td>56.89 ms</td>
+            <td>1064.00 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>Jitter proxy (avg absolute RTT delta)</td>
+            <td>0.90 ms</td>
+            <td>4.28 ms</td>
+            <td class="winner">PTCL</td>
+          </tr>
+          <tr>
+            <td>High spikes >= 100 ms</td>
+            <td>0</td>
+            <td>3</td>
+            <td class="winner">PTCL</td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="note">Lower values are better for all latency and jitter metrics listed above.</p>
+    </section>
+
+    <section class="section">
+      <h2>Visual Snapshot</h2>
+
+      <div class="bar-wrap">
+        <div class="bar-title"><span>Average latency</span><span>PTCL 34.84 ms | Nayatel 42.08 ms</span></div>
+        <div class="bar-bg"><span class="bar" style="width:69.7%;background:var(--ptcl)"></span></div>
+        <div class="bar-bg" style="margin-top:4px;"><span class="bar" style="width:84.2%;background:var(--nayatel)"></span></div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar-title"><span>P95 latency</span><span>PTCL 35.85 ms | Nayatel 42.00 ms</span></div>
+        <div class="bar-bg"><span class="bar" style="width:71.7%;background:var(--ptcl)"></span></div>
+        <div class="bar-bg" style="margin-top:4px;"><span class="bar" style="width:84%;background:var(--nayatel)"></span></div>
+      </div>
+
+      <div class="bar-wrap">
+        <div class="bar-title"><span>Jitter proxy</span><span>PTCL 0.90 ms | Nayatel 4.28 ms</span></div>
+        <div class="bar-bg"><span class="bar" style="width:9%;background:var(--ptcl)"></span></div>
+        <div class="bar-bg" style="margin-top:4px;"><span class="bar" style="width:42.8%;background:var(--nayatel)"></span></div>
+      </div>
+
+      <p class="note">Bars are normalized for quick relative reading.</p>
+    </section>
+
+    <div class="grid two">
+      <section class="section">
+        <h2>Methodology</h2>
+        <ul>
+          <li>Both logs were evaluated against the same destination host.</li>
+          <li>Nayatel RTT values were parsed from ICMP ping lines in milliseconds.</li>
+          <li>PTCL RTT values were parsed from timestamped CSV sample rows using the destination RTT column.</li>
+          <li>Percentile latency values (P95/P99) were used to evaluate consistency under worst-case moments.</li>
+          <li>Jitter proxy used: mean absolute difference between consecutive RTT samples.</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Support Follow-up Focus</h2>
+        <ul>
+          <li>Route quality and peering path from Nayatel to the tested endpoint region.</li>
+          <li>Tail-latency reduction (P95/P99) for sustained gaming sessions.</li>
+          <li>Micro-jitter consistency across evening peak hours.</li>
+          <li>Any intermittent network behavior contributing to large RTT excursions.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="section" style="text-align: center;">
+      <h2>Raw Data Files</h2>
+      <p style="color: var(--muted);">Download the original log files used for this analysis to verify the findings.</p>
+      <div style="margin-top: 16px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="20.74.160.84-PTCL.csv" download class="download-btn ptcl-btn">Download PTCL Data (CSV)</a>
+        <a href="Nayatel.txt" download class="download-btn nayatel-btn">Download Nayatel Data (TXT)</a>
+      </div>
+    </section>
+    
+    </div> <!-- End current test tab content -->
+
+    <div id="old-test" class="tab-content">
+      <iframe class="old-frame" srcdoc='<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nayatel Support — Network Issue Report</title>
+<style>
+  @import url(&#39;https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700&display=swap&#39;);
+
+  :root {
+    --bg: #0d0f14;
+    --surface: #13161e;
+    --border: #1e2330;
+    --accent: #e8a020;
+    --accent2: #3b82f6;
+    --red: #ef4444;
+    --green: #22c55e;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: &#39;JetBrains Mono&#39;, monospace;
+    --sans: &#39;Syne&#39;, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.6;
+    padding: 24px 16px;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .header {
+    border-left: 3px solid var(--accent);
+    padding-left: 16px;
+    margin-bottom: 32px;
+  }
+
+  .tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    font-family: var(--mono);
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-size: 12px;
+    font-family: var(--mono);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  p {
+    color: #94a3b8;
+    font-size: 15px;
+    margin-bottom: 12px;
+    line-height: 1.7;
+  }
+
+  p:last-child { margin-bottom: 0; }
+
+  /* Stats cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+  }
+
+  .stat-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-family: var(--mono);
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: var(--mono);
+  }
+
+  .stat-value.bad { color: var(--red); }
+  .stat-value.ok { color: var(--accent); }
+  .stat-value.good { color: var(--green); }
+
+  /* WinMTR table */
+  .winmtr-wrap {
+    margin-top: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+
+  .winmtr-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 12px;
+    min-width: 580px;
+  }
+
+  .winmtr-wrap thead tr {
+    background: #1a1f2e;
+  }
+
+  .winmtr-wrap th {
+    padding: 10px 12px;
+    text-align: left;
+    color: var(--accent);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .winmtr-wrap td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: #94a3b8;
+    white-space: nowrap;
+  }
+
+  .winmtr-wrap tr:last-child td { border-bottom: none; }
+
+  .winmtr-wrap tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .winmtr-wrap td.host { color: var(--text); max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+  .winmtr-wrap td.highlight { color: #fff; font-weight: 600; }
+  .winmtr-wrap td.loss-bad { color: var(--red); font-weight: 600; }
+  .winmtr-wrap td.loss-ok { color: var(--accent); }
+  .winmtr-wrap td.loss-good { color: var(--green); }
+  .winmtr-wrap td.worst-bad { color: var(--red); }
+
+  .scroll-hint {
+    font-size: 11px;
+    font-family: var(--mono);
+    color: var(--muted);
+    margin-bottom: 8px;
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .scroll-hint { display: block; }
+  }
+
+  /* Comparison */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 480px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+
+  .compare-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+  }
+
+  .compare-card.nayatel { border-top: 2px solid var(--accent); }
+  .compare-card.ptcl { border-top: 2px solid var(--accent2); }
+
+  .compare-isp {
+    font-size: 11px;
+    font-family: var(--mono);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .compare-isp.nayatel { color: var(--accent); }
+  .compare-isp.ptcl { color: var(--accent2); }
+
+  .compare-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    font-family: var(--mono);
+    margin-bottom: 6px;
+    color: var(--muted);
+  }
+
+  .compare-row span:last-child { color: var(--text); }
+  .compare-row span.bad { color: var(--red); }
+  .compare-row span.good { color: var(--green); }
+
+  /* Requests */
+  .request-list {
+    list-style: none;
+    margin-top: 8px;
+  }
+
+  .request-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: #94a3b8;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .request-list li:last-child { border-bottom: none; }
+
+  .req-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(232,160,32,0.1);
+    border-radius: 4px;
+    padding: 2px 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .footer {
+    margin-top: 32px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .badge.issue { background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+  .badge.ok { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.3); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="tag">Support Ticket · Network Diagnostics</div>
+    <h1>Packet Loss Issue Affecting Gaming Performance</h1>
+    <div class="subtitle">WinMTR Report · 30-minute test · 19:00–19:30 PKT</div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-title">Issue Summary</div>
+    <p>I am experiencing packet loss on my Nayatel connection which is impacting online gaming performance, specifically PUBG Mobile. I ran a 30-minute WinMTR test to the game server (<strong style="color:#fff">20.74.160.84</strong> — Microsoft Azure UAE, Dubai) and noticed consistent packet loss at a specific hop within the routing path.</p>
+    <p>For reference, a simultaneous PTCL test was conducted over the same 30-minute window under identical conditions to isolate the issue to Nayatel&#39;s network.</p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Problem Hop</div>
+        <div class="stat-value bad">8%</div>
+        <div class="stat-label" style="margin-top:4px">Packet Loss</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Hop IP</div>
+        <div class="stat-value ok" style="font-size:13px;margin-top:4px">51.10.33.50</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Worst Spike</div>
+        <div class="stat-value bad">353ms</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">PTCL Loss</div>
+        <div class="stat-value good">0%</div>
+        <div class="stat-label" style="margin-top:4px">Same Route</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nayatel WinMTR -->
+  <div class="section">
+    <div class="section-title">
+      Nayatel WinMTR Results
+      <span class="badge issue">Issue Detected</span>
+    </div>
+    <p style="font-size:13px;">Test duration: 30 minutes · Target: 20.74.160.84 (Azure UAE North, Dubai)</p>
+    <div class="scroll-hint">← Scroll horizontally to view full table →</div>
+    <div class="winmtr-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th>Loss%</th>
+            <th>Sent</th>
+            <th>Recv</th>
+            <th>Best</th>
+            <th>Avg</th>
+            <th>Worst</th>
+            <th>Last</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="host">192.168.18.1</td><td class="loss-ok">1%</td><td>1753</td><td>1743</td><td>1</td><td>3</td><td>287</td><td>1</td></tr>
+          <tr><td class="host">172.16.86.8</td><td class="loss-ok">1%</td><td>1749</td><td>1738</td><td>2</td><td>6</td><td>453</td><td>4</td></tr>
+          <tr><td class="host">10.97.158.110</td><td class="loss-ok">1%</td><td>1746</td><td>1734</td><td>2</td><td>6</td><td>310</td><td>4</td></tr>
+          <tr><td class="host">10.253.9.166</td><td class="loss-ok">1%</td><td>1753</td><td>1743</td><td>3</td><td>6</td><td>307</td><td>4</td></tr>
+          <tr><td class="host">10.253.9.222</td><td class="loss-ok">1%</td><td>1756</td><td>1747</td><td>14</td><td>17</td><td>240</td><td>15</td></tr>
+          <tr><td class="host">10.253.4.42</td><td class="loss-ok">1%</td><td>1753</td><td>1743</td><td>14</td><td>18</td><td>432</td><td>16</td></tr>
+          <tr><td class="host">10.253.4.8</td><td class="loss-ok">1%</td><td>1745</td><td>1733</td><td>15</td><td>18</td><td>340</td><td>16</td></tr>
+          <tr><td class="host">ae61-0.ier01.dxb20.ntwk.msn.net</td><td class="loss-ok">1%</td><td>1745</td><td>1733</td><td>32</td><td>37</td><td>432</td><td>34</td></tr>
+          <tr style="background:rgba(239,68,68,0.06)">
+            <td class="host highlight">51.10.33.50 ⚠️</td>
+            <td class="loss-bad">8%</td>
+            <td>1414</td><td>1315</td><td>34</td><td>38</td>
+            <td class="worst-bad">362</td><td>36</td>
+          </tr>
+          <tr><td class="host" colspan="8" style="color:var(--muted);font-style:italic;">— No response from host (×9 hops) —</td></tr>
+          <tr style="background:rgba(232,160,32,0.04)">
+            <td class="host highlight">20.74.160.84 (Final)</td>
+            <td class="loss-ok">1%</td>
+            <td>1750</td><td>1739</td><td>35</td><td>39</td>
+            <td class="worst-bad">353</td><td>35</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PTCL WinMTR -->
+  <div class="section">
+    <div class="section-title">
+      PTCL WinMTR Results (Reference)
+      <span class="badge ok">No Loss</span>
+    </div>
+    <p style="font-size:13px;">Same test · Same duration · Same target · Conducted simultaneously</p>
+    <div class="scroll-hint">← Scroll horizontally to view full table →</div>
+    <div class="winmtr-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Host</th>
+            <th>Loss%</th>
+            <th>Sent</th>
+            <th>Recv</th>
+            <th>Best</th>
+            <th>Avg</th>
+            <th>Worst</th>
+            <th>Last</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="host">192.168.1.1</td><td class="loss-ok">1%</td><td>1786</td><td>1785</td><td>1</td><td>3</td><td>395</td><td>1</td></tr>
+          <tr><td class="host">39.50.128.1</td><td class="loss-ok">1%</td><td>1782</td><td>1780</td><td>1</td><td>4</td><td>419</td><td>2</td></tr>
+          <tr><td class="host">10.253.9.166</td><td class="loss-ok">1%</td><td>1774</td><td>1770</td><td>2</td><td>4</td><td>458</td><td>2</td></tr>
+          <tr><td class="host">10.253.9.222</td><td class="loss-good">0%</td><td>1789</td><td>1789</td><td>13</td><td>16</td><td>391</td><td>14</td></tr>
+          <tr><td class="host">10.253.4.42</td><td class="loss-ok">1%</td><td>1782</td><td>1780</td><td>13</td><td>16</td><td>474</td><td>14</td></tr>
+          <tr><td class="host">10.253.4.8</td><td class="loss-ok">1%</td><td>1774</td><td>1770</td><td>14</td><td>16</td><td>408</td><td>17</td></tr>
+          <tr><td class="host">ae61-0.ier01.dxb20.ntwk.msn.net</td><td class="loss-ok">1%</td><td>1782</td><td>1780</td><td>31</td><td>36</td><td>493</td><td>33</td></tr>
+          <tr><td class="host">51.10.55.20</td><td class="loss-good">0%</td><td>1789</td><td>1789</td><td>31</td><td>34</td><td>409</td><td>32</td></tr>
+          <tr><td class="host" colspan="8" style="color:var(--muted);font-style:italic;">— No response from host (×9 hops) —</td></tr>
+          <tr style="background:rgba(232,160,32,0.04)">
+            <td class="host highlight">20.74.160.84 (Final)</td>
+            <td class="loss-good">0%</td>
+            <td>1789</td><td>1789</td><td>32</td><td>35</td>
+            <td>486</td><td>33</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Side by side comparison -->
+  <div class="section">
+    <div class="section-title">Side-by-Side Comparison</div>
+    <div class="compare-grid">
+      <div class="compare-card nayatel">
+        <div class="compare-isp nayatel">Nayatel</div>
+        <div class="compare-row"><span>Hop 9 Loss</span><span class="bad">8%</span></div>
+        <div class="compare-row"><span>Final Loss</span><span>1%</span></div>
+        <div class="compare-row"><span>Final Avg</span><span>39ms</span></div>
+        <div class="compare-row"><span>Final Worst</span><span>353ms</span></div>
+      </div>
+      <div class="compare-card ptcl">
+        <div class="compare-isp ptcl">PTCL (Reference)</div>
+        <div class="compare-row"><span>Hop 8 Loss</span><span class="good">0%</span></div>
+        <div class="compare-row"><span>Final Loss</span><span class="good">0%</span></div>
+        <div class="compare-row"><span>Final Avg</span><span>35ms</span></div>
+        <div class="compare-row"><span>Final Worst</span><span>486ms</span></div>
+      </div>
+    </div>
+    <p style="margin-top:14px;font-size:13px;">The 8% packet loss at <strong style="color:#fff">51.10.33.50</strong> is unique to the Nayatel routing path. The same destination via PTCL shows 0% loss at an equivalent hop, confirming this is a Nayatel network issue and not a problem with the game server or my local equipment.</p>
+  </div>
+
+  <!-- Requests -->
+  <div class="section">
+    <div class="section-title">Requested Actions</div>
+    <ul class="request-list">
+      <li><span class="req-num">01</span>Investigate packet loss at hop <strong style="color:#fff">51.10.33.50</strong> on the Nayatel routing path to Dubai (Azure UAE North)</li>
+      <li><span class="req-num">02</span>Check for congestion or peering issues on this specific transit link</li>
+      <li><span class="req-num">03</span>Optimize routing path to <strong style="color:#fff">20.74.160.84</strong> for improved real-time gaming performance</li>
+      <li><span class="req-num">04</span>Confirm once the issue has been investigated and advise if further testing is required</li>
+    </ul>
+  </div>
+
+  <div class="footer">
+    Generated · WinMTR v0.92 · Test duration 30 minutes · 19:00–19:30 PKT
+  </div>
+
+</div>
+</body>
+</html>'></iframe>
+    </div>
+
+  </div>
+
+  <script>
+    function openTab(tabId, btn) {
+      document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+      document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+      document.getElementById(tabId).classList.add("active");
+      btn.classList.add("active");
+    }
+  </script>
+</body>
+</html>
